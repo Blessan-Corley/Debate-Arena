@@ -4,7 +4,7 @@ from config import Settings
 from types import SimpleNamespace
 
 from agents.pro import ProAgent
-from agents.con import _response_text as con_response_text
+from agents.con_agent import _response_text as con_response_text
 from agents.judge import _coerce_decision_payload, _response_text as judge_response_text
 from agents.pro import _response_text as pro_response_text
 

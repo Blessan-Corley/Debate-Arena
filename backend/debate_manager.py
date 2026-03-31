@@ -9,7 +9,7 @@ from agents.crowd import CrowdAgent
 from agents.host import HostAgent
 from agents.judge import JudgeAgent
 from agents.pro import ProAgent
-from agents.con import ConAgent
+from agents.con_agent import ConAgent
 from config import Settings
 from models import DebateEvent, ResearchUpdate
 from storage import DebateStore

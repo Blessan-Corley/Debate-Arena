@@ -1,6 +1,6 @@
 from types import SimpleNamespace
 
-from agents.con import _coerce_research_payload, _coerce_search_plan_response
+from agents.con_agent import _coerce_research_payload, _coerce_search_plan_response
 
 
 def test_coerce_research_payload_accepts_json_text():
