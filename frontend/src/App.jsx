@@ -58,8 +58,8 @@ export default function App() {
 
   if (selectedHistory) {
     return (
-      <div className="min-h-screen px-4 py-6 lg:px-6">
-        <div className={`grid gap-6 ${historyColumnClass}`}>
+      <div className="min-h-screen px-3 py-4 sm:px-4 sm:py-6 lg:px-6">
+        <div className={`mx-auto grid w-full max-w-[1600px] min-w-0 items-start gap-4 sm:gap-6 ${historyColumnClass}`}>
           <DebateArena
             topic={selectedHistory.topic}
             feed={archiveFeed}
@@ -82,6 +82,7 @@ export default function App() {
             deletingId={deletingHistoryId}
             collapsed={historyCollapsed}
             onToggle={() => setHistoryCollapsed(value => !value)}
+            compact
           />
         </div>
       </div>
@@ -90,9 +91,9 @@ export default function App() {
 
   if (showHomeScreen) {
     return (
-      <div className="min-h-screen px-4 py-8 lg:px-6">
-        <div className={`grid gap-6 items-start ${historyColumnClass}`}>
-          <div className="space-y-5">
+      <div className="min-h-screen px-3 py-4 sm:px-4 sm:py-8 lg:px-6">
+        <div className={`mx-auto grid w-full max-w-[1600px] min-w-0 items-start gap-4 sm:gap-6 ${historyColumnClass}`}>
+          <div className="min-w-0 space-y-5">
             <TopicInput onStart={handleStart} disabled={false} />
             {error && (
               <div className="arena-panel border border-red-400/30 text-red-200">
@@ -117,7 +118,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-6 lg:px-6">
+    <div className="min-h-screen px-3 py-4 sm:px-4 sm:py-6 lg:px-6">
       <DebateArena
         topic={currentTopic}
         feed={arena.feed}

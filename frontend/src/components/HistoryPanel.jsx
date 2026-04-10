@@ -49,12 +49,12 @@ function ArchiveControls({ collapsed, onRefresh, onToggle }) {
 function HistoryCard({ item, selectedId, onOpen, onDelete, deletingId }) {
   return (
     <div className={`history-card text-left w-full ${selectedId === item.debate_id ? 'history-card-active' : ''}`}>
-      <div className="flex items-start justify-between gap-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="font-mono text-[11px] uppercase tracking-[0.26em] text-slate-500">
             {item.status}
           </div>
-          <div className="font-body text-base text-slate-100 mt-1 max-h-14 overflow-hidden">
+          <div className="font-body mt-1 max-h-14 overflow-hidden break-words text-base text-slate-100">
             {item.topic}
           </div>
         </div>
@@ -71,11 +71,11 @@ function HistoryCard({ item, selectedId, onOpen, onDelete, deletingId }) {
         <span>{item.message_count} events</span>
         <span>{item.winner || 'no winner yet'}</span>
       </div>
-      <div className="mt-4 flex items-center justify-between gap-3">
+      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <button
           type="button"
           onClick={() => onOpen(item.debate_id)}
-          className="arena-btn subtle-btn px-3 py-2"
+          className="arena-btn subtle-btn w-full px-3 py-2 sm:w-auto"
         >
           Open
         </button>
@@ -83,7 +83,7 @@ function HistoryCard({ item, selectedId, onOpen, onDelete, deletingId }) {
           type="button"
           onClick={() => onDelete(item.debate_id)}
           disabled={deletingId === item.debate_id}
-          className="arena-btn history-delete-btn"
+          className="arena-btn history-delete-btn w-full sm:w-auto"
         >
           {deletingId === item.debate_id ? 'Deleting' : 'Delete'}
         </button>
@@ -119,7 +119,7 @@ export default function HistoryPanel({
   }
 
   return (
-    <section className="arena-panel h-full history-panel-shell">
+    <section className="arena-panel h-full min-w-0 history-panel-shell">
       <div className="history-panel-header mb-4">
         <div>
           <div className="eyebrow">Previous Debates</div>

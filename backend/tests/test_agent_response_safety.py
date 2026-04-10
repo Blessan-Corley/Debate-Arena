@@ -3,6 +3,9 @@ from groq import RateLimitError
 from config import Settings
 from types import SimpleNamespace
 
+from agents.con_agent import ConAgent
+from agents.crowd import CrowdAgent
+from agents.host import HostAgent
 from agents.pro import ProAgent
 from agents.con_agent import _response_text as con_response_text
 from agents.judge import _coerce_decision_payload, _response_text as judge_response_text
@@ -71,3 +74,103 @@ def test_pro_follow_up_plan_returns_default_when_provider_call_fails(monkeypatch
 
     assert plan.needs_search is False
     assert plan.query is None
+
+
+def test_con_follow_up_plan_returns_default_when_provider_call_fails(monkeypatch):
+    agent = ConAgent(
+        Settings(
+            groq_api_key="groq-test",
+            gemini_api_key="gemini-test",
+            tavily_api_key="tavily-test",
+            mongodb_uri=None,
+            mongodb_db_name="debate_arena_test",
+            mongodb_strict_startup=True,
+            mongodb_timeout_ms=8000,
+            cors_origins=["http://localhost:5173"],
+            host_model="llama-3.3-70b-versatile",
+            pro_model="llama-3.3-70b-versatile",
+            crowd_model="llama-3.3-70b-versatile",
+            con_model="gemini-2.5-flash",
+            judge_model="gemini-2.5-flash",
+        )
+    )
+
+    async def _generate_content(*args, **kwargs):
+        raise RuntimeError("provider unavailable")
+
+    fake_client = SimpleNamespace(
+        aio=SimpleNamespace(
+            models=SimpleNamespace(generate_content=_generate_content)
+        )
+    )
+    monkeypatch.setattr(agent, "_client_or_raise", lambda: fake_client)
+
+    plan = __import__("asyncio").run(
+        agent.plan_follow_up_search("Topic", [{"agent": "pro", "type": "argument", "message": "Point"}], None)
+    )
+
+    assert plan.needs_search is False
+    assert plan.query is None
+
+
+def test_host_introduce_falls_back_when_content_missing(monkeypatch):
+    agent = HostAgent(
+        Settings(
+            groq_api_key="groq-test",
+            gemini_api_key="gemini-test",
+            tavily_api_key="tavily-test",
+            mongodb_uri=None,
+            mongodb_db_name="debate_arena_test",
+            mongodb_strict_startup=True,
+            mongodb_timeout_ms=8000,
+            cors_origins=["http://localhost:5173"],
+            host_model="llama-3.3-70b-versatile",
+            pro_model="llama-3.3-70b-versatile",
+            crowd_model="llama-3.3-70b-versatile",
+            con_model="gemini-2.5-flash",
+            judge_model="gemini-2.5-flash",
+        )
+    )
+
+    class _Completions:
+        async def create(self, *args, **kwargs):
+            return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=None))])
+
+    fake_client = SimpleNamespace(chat=SimpleNamespace(completions=_Completions()))
+    monkeypatch.setattr(agent, "_client_or_raise", lambda: fake_client)
+
+    intro = __import__("asyncio").run(agent.introduce("Topic"))
+
+    assert intro
+
+
+def test_crowd_maybe_react_defaults_when_content_missing(monkeypatch):
+    agent = CrowdAgent(
+        Settings(
+            groq_api_key="groq-test",
+            gemini_api_key="gemini-test",
+            tavily_api_key="tavily-test",
+            mongodb_uri=None,
+            mongodb_db_name="debate_arena_test",
+            mongodb_strict_startup=True,
+            mongodb_timeout_ms=8000,
+            cors_origins=["http://localhost:5173"],
+            host_model="llama-3.3-70b-versatile",
+            pro_model="llama-3.3-70b-versatile",
+            crowd_model="llama-3.3-70b-versatile",
+            con_model="gemini-2.5-flash",
+            judge_model="gemini-2.5-flash",
+        )
+    )
+
+    class _Completions:
+        async def create(self, *args, **kwargs):
+            return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=None))])
+
+    fake_client = SimpleNamespace(chat=SimpleNamespace(completions=_Completions()))
+    monkeypatch.setattr(agent, "_client_or_raise", lambda: fake_client)
+
+    reaction = __import__("asyncio").run(agent.maybe_react("Topic", []))
+
+    assert reaction.react is False
+    assert reaction.message is None

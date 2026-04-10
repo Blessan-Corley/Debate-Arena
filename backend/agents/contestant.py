@@ -68,6 +68,12 @@ def _response_text(response, fallback: str) -> str:
     return fallback
 
 
+def _clean_text(value: Any) -> str:
+    if isinstance(value, str):
+        return value.strip()
+    return ""
+
+
 def _fallback_fact_points(text: str) -> list[str]:
     lines = [
         line.strip(" -*•\t")
@@ -77,8 +83,8 @@ def _fallback_fact_points(text: str) -> list[str]:
     return [line for line in lines if len(line) > 18][:4]
 
 
-def _coerce_research_payload(text: str) -> _GeminiResearchResponse:
-    cleaned_text = text.strip()
+def _coerce_research_payload(text: Any) -> _GeminiResearchResponse:
+    cleaned_text = _clean_text(text)
     upper_text = cleaned_text.upper()
     if "SUMMARY:" in upper_text:
         summary_start = upper_text.find("SUMMARY:")
@@ -93,7 +99,7 @@ def _coerce_research_payload(text: str) -> _GeminiResearchResponse:
                     fact_points=fact_points[:5],
                 )
 
-    data = parse_json_blob(text)
+    data = parse_json_blob(cleaned_text)
     if data:
         summary = str(data.get("summary") or "").strip()
         raw_fact_points = data.get("fact_points") or []
@@ -105,10 +111,10 @@ def _coerce_research_payload(text: str) -> _GeminiResearchResponse:
         if summary and fact_points:
             return _GeminiResearchResponse(summary=summary, fact_points=fact_points[:5])
 
-    cleaned = " ".join(text.split()).strip()
+    cleaned = " ".join(cleaned_text.split()).strip()
     summary = truncate_words(cleaned or "No grounded research summary returned.", 38)
-    fact_points = _fallback_fact_points(text)
-    if not fact_points and cleaned:
+    fact_points = _fallback_fact_points(cleaned_text)
+    if not fact_points:
         fact_points = [summary]
     return _GeminiResearchResponse(summary=summary, fact_points=fact_points[:5])
 
@@ -170,8 +176,10 @@ class ConAgent:
                 thinking_config=types.ThinkingConfig(thinking_budget=0),
             ),
         )
-        structured = _coerce_research_payload(response.text)
-        metadata = getattr(response.candidates[0], "grounding_metadata", None) if response.candidates else None
+        structured = _coerce_research_payload(getattr(response, "text", None))
+        candidates = getattr(response, "candidates", None) or []
+        first_candidate = candidates[0] if candidates else None
+        metadata = getattr(first_candidate, "grounding_metadata", None)
         raw_queries = getattr(metadata, "web_search_queries", None) if metadata else None
         search_queries = list(raw_queries or [])
         grounding_chunks = getattr(metadata, "grounding_chunks", None) if metadata else None
@@ -210,23 +218,26 @@ class ConAgent:
         human_interrupt: str | None,
     ) -> SearchPlan:
         recent_context = build_recent_context(history, 6) or "No recent exchange."
-        response = await self._client_or_raise().aio.models.generate_content(
-            model=self._model,
-            contents=(
-                f"Topic: {topic}\n\n"
-                f"Recent exchange:\n{recent_context}\n\n"
-                f"Audience input: {human_interrupt or 'None'}\n\n"
-                f"Known facts:\n{chr(10).join(self._fact_notes[-3:]) or 'None'}"
-            ),
-            config=types.GenerateContentConfig(
-                system_instruction=PLAN_PROMPT,
-                response_mime_type="application/json",
-                response_json_schema=PLAN_SCHEMA,
-                temperature=0.2,
-                max_output_tokens=100,
-                thinking_config=types.ThinkingConfig(thinking_budget=0),
-            ),
-        )
+        try:
+            response = await self._client_or_raise().aio.models.generate_content(
+                model=self._model,
+                contents=(
+                    f"Topic: {topic}\n\n"
+                    f"Recent exchange:\n{recent_context}\n\n"
+                    f"Audience input: {human_interrupt or 'None'}\n\n"
+                    f"Known facts:\n{chr(10).join(self._fact_notes[-3:]) or 'None'}"
+                ),
+                config=types.GenerateContentConfig(
+                    system_instruction=PLAN_PROMPT,
+                    response_mime_type="application/json",
+                    response_json_schema=PLAN_SCHEMA,
+                    temperature=0.2,
+                    max_output_tokens=100,
+                    thinking_config=types.ThinkingConfig(thinking_budget=0),
+                ),
+            )
+        except Exception:
+            return SearchPlan()
         return _coerce_search_plan_response(response)
 
     async def respond(

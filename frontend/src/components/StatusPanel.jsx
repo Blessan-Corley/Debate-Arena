@@ -31,7 +31,7 @@ export default function StatusPanel({ status, winner, debateId, feedCount, sourc
       </div>
       <div className="status-metric">
         <span>Debate ID</span>
-        <strong className="truncate">{debateId || 'Not started'}</strong>
+        <strong className="break-all sm:text-right">{debateId || 'Not started'}</strong>
       </div>
     </section>
   )

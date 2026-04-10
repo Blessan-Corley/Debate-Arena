@@ -48,4 +48,15 @@ class HostAgent:
             temperature=0.8,
             max_tokens=96,
         )
-        return response.choices[0].message.content.strip()
+        try:
+            content = response.choices[0].message.content
+        except (AttributeError, IndexError, KeyError, TypeError):
+            content = None
+
+        if isinstance(content, str) and content.strip():
+            return content.strip()
+
+        return (
+            f"Tonight's motion is {topic}. Blessan takes the Pro side, "
+            "Pranav takes the Con side, and The Arena is live."
+        )

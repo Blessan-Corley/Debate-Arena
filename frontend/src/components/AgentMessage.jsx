@@ -25,7 +25,7 @@ function SearchCard({ item, config }) {
   const presentation = getAgentPresentation(item.agent)
 
   return (
-    <div className={`feed-card ${alignmentClass(config.align)} max-w-3xl w-full border ${config.borderClass}`}>
+    <div className={`feed-card ${alignmentClass(config.align)} max-w-3xl min-w-0 w-full border ${config.borderClass}`}>
       <div className="feed-meta">
         <AgentIcon agent={item.agent} size={14} className={config.colorClass} />
         <span className={config.colorClass}>{presentation.name}</span>
@@ -33,9 +33,9 @@ function SearchCard({ item, config }) {
           {item.type === 'search_started' ? 'Live Search Started' : 'Live Search Complete'}
         </span>
       </div>
-      <p className="text-slate-200 mt-3 leading-relaxed">{item.message}</p>
+      <p className="mt-3 break-words text-slate-200 leading-relaxed">{item.message}</p>
       {item.metadata?.query && (
-        <div className="mt-3 text-xs font-mono uppercase tracking-[0.18em] text-slate-500">
+        <div className="mt-3 break-all text-xs font-mono uppercase tracking-[0.18em] text-slate-500">
           Query: {item.metadata.query}
         </div>
       )}
@@ -49,10 +49,10 @@ function SearchCard({ item, config }) {
               href={normalized.url}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-sm text-slate-300 hover:text-white transition-colors"
+              className="inline-flex min-w-0 flex-wrap items-center gap-2 text-sm text-slate-300 transition-colors hover:text-white"
             >
               <span className="source-provider">{getProviderLabel(normalized.provider)}</span>
-              <span className="truncate">{normalized.title}</span>
+              <span className="min-w-0 break-words">{normalized.title}</span>
             </a>
             )
           })}
@@ -76,14 +76,14 @@ export default function AgentMessage({ item }) {
   }
 
   return (
-    <div className={`${align} ${isJudgeVerdict ? 'max-w-4xl' : 'max-w-3xl'} w-full animate-fade-in`}>
+    <div className={`${align} ${isJudgeVerdict ? 'max-w-4xl' : 'max-w-3xl'} min-w-0 w-full animate-fade-in`}>
       <div className={`feed-card ${isJudgeVerdict ? 'feed-card-judge' : ''} ${isSystemError ? 'feed-card-error' : ''} border ${config.borderClass}`}>
         <div className="feed-meta">
           <AgentIcon agent={item.agent === 'system' ? 'judge' : item.agent} size={14} className={config.colorClass} />
           <span className={config.colorClass}>{presentation.name}</span>
           <span className="text-slate-500">{presentation.role}</span>
         </div>
-        <p className={`mt-3 leading-relaxed ${item.agent === 'crowd' ? 'text-arena-crowd italic' : 'text-slate-100'} ${isJudgeVerdict ? 'verdict-text' : ''}`}>
+        <p className={`mt-3 break-words leading-relaxed ${item.agent === 'crowd' ? 'text-arena-crowd italic' : 'text-slate-100'} ${isJudgeVerdict ? 'verdict-text' : ''}`}>
           {item.message}
         </p>
       </div>

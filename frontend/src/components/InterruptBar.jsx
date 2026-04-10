@@ -53,9 +53,9 @@ export default function InterruptBar({ onInterrupt, disabled }) {
         </button>
       </form>
 
-      <div className="mt-3 flex items-center justify-between gap-3 text-xs font-mono uppercase tracking-[0.18em]">
+      <div className="mt-3 flex flex-col gap-2 text-xs font-mono uppercase tracking-[0.18em] sm:flex-row sm:items-center sm:justify-between">
         <span className="text-slate-500">{280 - message.length} characters left</span>
-        <span className={notice ? 'text-arena-human' : 'text-slate-500'}>
+        <span className={notice ? 'break-words text-arena-human sm:text-right' : 'break-words text-slate-500 sm:text-right'}>
           {notice || 'Interrupts are routed into the live queue'}
         </span>
       </div>

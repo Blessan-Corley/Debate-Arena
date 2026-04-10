@@ -35,7 +35,7 @@ export default function FeedbackPanel({ onSubmit, onReset }) {
         <p className="text-slate-300 mt-3">
           Your reaction is now part of the debate history.
         </p>
-        <button type="button" onClick={onReset} className="arena-btn subtle-btn px-4 py-3 mt-5">
+        <button type="button" onClick={onReset} className="arena-btn subtle-btn mt-5 w-full px-4 py-3 sm:w-auto">
           Start Another Debate
         </button>
       </section>
@@ -66,7 +66,7 @@ export default function FeedbackPanel({ onSubmit, onReset }) {
 
         <div>
           <label className="eyebrow mb-2 block">Rate The Debate</label>
-          <div className="flex gap-2">
+          <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
             {[1, 2, 3, 4, 5].map((value) => (
               <button
                 key={value}
@@ -98,11 +98,11 @@ export default function FeedbackPanel({ onSubmit, onReset }) {
           <button
             type="submit"
             disabled={!rating || submitting}
-            className="arena-btn hero-cta px-5 py-3"
+            className="arena-btn hero-cta w-full px-5 py-3 md:w-auto"
           >
             {submitting ? 'Submitting...' : 'Submit Feedback'}
           </button>
-          <button type="button" onClick={onReset} className="arena-btn subtle-btn px-5 py-3">
+          <button type="button" onClick={onReset} className="arena-btn subtle-btn w-full px-5 py-3 md:w-auto">
             New Debate
           </button>
         </div>

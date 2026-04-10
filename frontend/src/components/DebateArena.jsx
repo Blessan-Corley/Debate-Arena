@@ -65,9 +65,9 @@ export default function DebateArena({
   }
 
   return (
-    <div className="arena-shell max-w-7xl mx-auto">
+    <div className="arena-shell mx-auto w-full max-w-7xl min-w-0">
       <header className="arena-header">
-        <div>
+        <div className="min-w-0 flex-1">
           <div className="eyebrow">Live Debate Feed</div>
           <h1 className="arena-topic">
             {topic ? `"${topic}"` : 'Debate Archive'}
@@ -76,14 +76,14 @@ export default function DebateArena({
         <button
           type="button"
           onClick={onReset}
-          className="arena-btn subtle-btn px-4 py-2"
+          className="arena-btn subtle-btn w-full px-4 py-2 sm:w-auto"
         >
           {readOnly ? 'Back' : 'Reset'}
         </button>
       </header>
 
       <div className="arena-stage">
-        <section className="arena-panel arena-feed-panel">
+        <section className="arena-panel arena-feed-panel min-w-0">
           <div
             ref={feedScrollRef}
             onScroll={handleFeedScroll}
@@ -99,7 +99,7 @@ export default function DebateArena({
           </div>
         </section>
 
-        <aside className="arena-side-column">
+        <aside className="arena-side-column min-w-0">
           <StatusPanel
             status={status}
             winner={winner}

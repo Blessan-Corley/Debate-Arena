@@ -54,10 +54,10 @@ export default function TopicInput({ onStart, disabled }) {
           />
         </div>
 
-        <div className="flex flex-col gap-4 md:flex-row md:items-end">
-          <div>
+        <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+          <div className="min-w-0">
             <label className="eyebrow mb-2 block">Debate Length</label>
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {[4, 5, 6].map((value) => (
                 <button
                   key={value}
@@ -74,7 +74,7 @@ export default function TopicInput({ onStart, disabled }) {
           <button
             type="submit"
             disabled={!topic.trim() || disabled}
-            className="arena-btn hero-cta px-6 py-4"
+            className="arena-btn hero-cta w-full px-6 py-4 md:w-auto"
           >
             Enter The Arena
           </button>

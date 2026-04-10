@@ -6,12 +6,10 @@ Thumbs.db
 *.py[cod]
 
 .env
-.env.local
-.env.*.local
 backend/.env
 frontend/.env
-backend/.env.*
-frontend/.env.*
+backend/.env
+frontend/.env
 
 node_modules/
 frontend/node_modules/
